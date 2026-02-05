@@ -4,7 +4,6 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
 import VideoCard from '@/components/VideoCard'
-import SearchInput from '@/components/SearchInput'
 
 function HomeContent() {
     const { data: session } = useSession()
@@ -59,7 +58,7 @@ function HomeContent() {
     return (
         <div className="pt-6 px-4 sm:px-6 lg:px-8 pb-4 sm:pb-6 lg:pb-8 bg-white dark:bg-transparent">
             <main className="max-w-7xl mx-auto pb-20">
-                <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-200 dark:border-white/10 pb-10">
+                <div className="mb-12 border-b border-gray-200 dark:border-white/10 pb-10">
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
                             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
@@ -77,12 +76,37 @@ function HomeContent() {
                         </p>
                     </div>
 
-                    <div className="w-full md:w-auto">
-                        <SearchInput
-                            onSearch={setSearchQuery}
-                            placeholder="Search library..."
-                            className="w-full md:min-w-[400px]"
-                        />
+                    {/* Mobile-only search bar */}
+                    <div className="md:hidden mt-6">
+                        <div className="relative w-full">
+                            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1E293B]/50 transition-all duration-300 focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(37,99,235,0.1)]">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                                </svg>
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && searchQuery.trim()) {
+                                            window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`
+                                        }
+                                    }}
+                                    placeholder="Search videos and playlists..."
+                                    className="flex-1 bg-transparent border-none outline-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 font-medium text-sm"
+                                />
+                                {searchQuery && (
+                                    <button
+                                        onClick={() => setSearchQuery('')}
+                                        className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-500 dark:text-gray-400">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
 

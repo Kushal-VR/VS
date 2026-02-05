@@ -6,7 +6,6 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import {
     HomeIcon,
     QueueListIcon,
-    BoltIcon,
     GiftIcon,
     ClockIcon,
     VideoCameraIcon,
@@ -17,16 +16,48 @@ import {
 import {
     HomeIcon as HomeIconSolid,
     QueueListIcon as QueueListIconSolid,
-    BoltIcon as BoltIconSolid,
     GiftIcon as GiftIconSolid,
     ClockIcon as ClockIconSolid,
     VideoCameraIcon as VideoCameraIconSolid
 } from '@heroicons/react/24/solid'
 import { signOut, useSession } from 'next-auth/react'
 
+// Custom Diamond/Sparkle Icon for Premium
+const DiamondIcon = ({ className }: { className?: string }) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth="1.5"
+        stroke="currentColor"
+        className={className}
+    >
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"
+        />
+    </svg>
+)
+
+const DiamondIconSolid = ({ className }: { className?: string }) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className={className}
+    >
+        <path
+            fillRule="evenodd"
+            d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+            clipRule="evenodd"
+        />
+    </svg>
+)
+
 const navigation = [
     { name: 'Home', href: '/home', icon: HomeIcon, iconActive: HomeIconSolid },
-    { name: 'Premium', href: '/premium', icon: BoltIcon, iconActive: BoltIconSolid },
+    { name: 'Premium', href: '/premium', icon: DiamondIcon, iconActive: DiamondIconSolid },
     { name: 'Free Videos', href: '/free', icon: GiftIcon, iconActive: GiftIconSolid },
     { name: 'Watch Later', href: '/watch-later', icon: ClockIcon, iconActive: ClockIconSolid },
     { name: 'Playlists', href: '/playlists', icon: QueueListIcon, iconActive: QueueListIconSolid },
@@ -42,26 +73,18 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
 
     return (
         <>
-            {/* Mobile Backdrop */}
+            {/* Mobile Overlay */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
+                    className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-30 transition-opacity duration-300"
                     onClick={onClose}
                 />
             )}
 
             <aside
-                className={`fixed left-0 top-0 lg:top-16 w-64 h-full lg:h-[calc(100vh-4rem)] bg-white dark:bg-[#0F172A] border-r border-gray-200 dark:border-white/10 overflow-y-auto z-40 lg:z-20 transition-all duration-300 transform shadow-lg ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+                className={`fixed left-0 top-16 w-64 h-[calc(100vh-4rem)] bg-white dark:bg-[#0F172A] border-r border-gray-200 dark:border-white/10 overflow-y-auto z-40 transition-all duration-300 transform shadow-lg ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
             >
                 <div className="flex flex-col h-full p-4">
-                    {/* Mobile Header */}
-                    <div className="flex lg:hidden items-center justify-between mb-8 px-2">
-                        <span className="text-xl font-black text-gray-900 dark:text-white tracking-tight uppercase">Kushal Stream</span>
-                        <button onClick={onClose} className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-smooth">
-                            <XMarkIcon className="w-6 h-6" />
-                        </button>
-                    </div>
-
                     <div className="space-y-6 flex-1">
                         <div>
                             <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider px-3 mb-3">Sections</h2>
@@ -76,7 +99,12 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                                         <Link
                                             key={item.name}
                                             href={item.href}
-                                            onClick={onClose}
+                                            onClick={() => {
+                                                // Only close sidebar on mobile (below lg breakpoint)
+                                                if (window.innerWidth < 1024) {
+                                                    onClose()
+                                                }
+                                            }}
                                             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-smooth group relative border-2 ${isActive
                                                 ? 'border-primary text-black dark:text-white shadow-[0_4px_12px_-2px_rgba(37,99,235,0.4)] font-bold'
                                                 : 'border-transparent text-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-primary'
@@ -155,9 +183,8 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                                 <Link
                                     href="/pricing"
                                     onClick={onClose}
-                                    className="flex items-center gap-3 px-3 py-3 rounded-xl transition-all group bg-black hover:bg-gray-800 shadow-[0_8px_20px_-4px_rgba(0,0,0,0.4)]"
+                                    className="flex items-center justify-center gap-3 px-3 py-3 rounded-xl transition-all group bg-black hover:bg-gray-800 shadow-[0_8px_20px_-4px_rgba(0,0,0,0.4)]"
                                 >
-                                    <BoltIcon className="w-5 h-5 text-white flex-shrink-0" />
                                     <span className="font-bold text-white uppercase tracking-wider text-xs">Upgrade to Premium</span>
                                 </Link>
                             )}

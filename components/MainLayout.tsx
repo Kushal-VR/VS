@@ -7,7 +7,7 @@ import { Toaster } from 'react-hot-toast'
 import { usePathname } from 'next/navigation'
 
 export default function MainLayout({ children, session }: { children: React.ReactNode, session: any }) {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true) // Default to open on desktop
     const pathname = usePathname()
 
     // Don't show navigation on auth pages or landing page
@@ -26,7 +26,7 @@ export default function MainLayout({ children, session }: { children: React.Reac
         <div className="min-h-screen bg-white dark:bg-[#0B0F1A] transition-colors duration-300">
             {/* Navbar with blue shadow */}
             <div className="shadow-[0_2px_8px_rgba(37,99,235,0.15)] dark:shadow-[0_4px_12px_rgba(37,99,235,0.25)] relative z-50">
-                <Navbar onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
+                <Navbar onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} isSidebarOpen={isSidebarOpen} />
             </div>
 
             {/* Sidebar with blue shadow */}
@@ -38,7 +38,7 @@ export default function MainLayout({ children, session }: { children: React.Reac
             </div>
 
             {/* Main content area with white background */}
-            <div className={`transition-all duration-300 ${isSidebarOpen ? 'blur-sm lg:blur-none' : ''} lg:pl-64 min-h-screen bg-transparent pt-6`}>
+            <div className={`transition-all duration-300 ${isSidebarOpen ? 'lg:pl-64' : 'lg:pl-0'} min-h-screen bg-transparent pt-16`}>
                 <main className="bg-transparent">{children}</main>
             </div>
             <Toaster position="top-right" />

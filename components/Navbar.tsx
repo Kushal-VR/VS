@@ -1,39 +1,122 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { Bars3Icon } from '@heroicons/react/24/outline'
+import { usePathname, useRouter } from 'next/navigation'
+import { Bars3Icon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { useTheme } from './ThemeContext'
 import { Sun, Moon } from 'lucide-react'
 import { motion } from 'framer-motion'
 
-export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
+export default function Navbar({ onMenuClick, isSidebarOpen }: { onMenuClick: () => void; isSidebarOpen: boolean }) {
     const pathname = usePathname()
+    const router = useRouter()
     const { theme, toggleTheme } = useTheme()
+    const [isVisible, setIsVisible] = useState(true)
+    const [lastScrollY, setLastScrollY] = useState(0)
+    const [searchQuery, setSearchQuery] = useState('')
+
+    const handleSearch = (query: string) => {
+        setSearchQuery(query)
+        if (query.trim()) {
+            router.push(`/search?q=${encodeURIComponent(query.trim())}`)
+        }
+    }
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY
+            const scrollDelta = Math.abs(currentScrollY - lastScrollY)
+
+            // Only trigger if scroll delta is significant (prevents jitter)
+            if (scrollDelta < 5) return
+
+            // Show navbar when scrolling up (anywhere on page), hide when scrolling down
+            if (currentScrollY < lastScrollY) {
+                // Scrolling up - show navbar
+                setIsVisible(true)
+            } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                // Scrolling down and past 100px - hide navbar
+                setIsVisible(false)
+            }
+
+            setLastScrollY(currentScrollY)
+        }
+
+        // Use requestAnimationFrame for smoother performance
+        let ticking = false
+        const scrollListener = () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    handleScroll()
+                    ticking = false
+                })
+                ticking = true
+            }
+        }
+
+        window.addEventListener('scroll', scrollListener, { passive: true })
+
+        return () => {
+            window.removeEventListener('scroll', scrollListener)
+        }
+    }, [lastScrollY])
 
     // Don't show navbar on login/register
     if (pathname.startsWith('/auth')) return null
 
     return (
-        <nav className="sticky top-0 z-50 bg-white dark:bg-[#0F172A] border-b border-gray-200 dark:border-white/10 shadow-sm transition-colors duration-300">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav className={`fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#0F172A] border-b border-gray-200 dark:border-white/10 shadow-sm transition-all duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+            <div className="px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
-                    <div className="flex items-center gap-4">
-                        {/* Mobile Toggle */}
+                    {/* Left: Menu Toggle + Logo */}
+                    <div className="flex items-center gap-2">
+                        {/* Menu Toggle - Absolute far left */}
                         <button
                             onClick={onMenuClick}
-                            className="lg:hidden p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10 transition-smooth hover:scale-105 focus-primary"
+                            className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10 transition-all hover:scale-105"
                             aria-label="Toggle menu"
                         >
                             <Bars3Icon className="w-6 h-6" />
                         </button>
 
                         {/* Logo */}
-                        <Link href="/home" className="flex items-center space-x-2 group">
-                            <span className="text-2xl font-black text-gray-900 dark:text-white tracking-tight uppercase group-hover:text-primary transition-all">
+                        <Link href="/home" className="flex items-center group">
+                            <span className="text-xl md:text-2xl font-black text-gray-900 dark:text-white tracking-tight uppercase group-hover:text-primary transition-all">
                                 Kushal Stream
                             </span>
                         </Link>
+                    </div>
+
+                    {/* Center: Search Bar (Desktop only) */}
+                    <div className="hidden md:flex flex-1 max-w-2xl mx-8">
+                        <div className="relative w-full">
+                            <div className="flex items-center gap-3 px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1E293B]/50 transition-all duration-300 focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(37,99,235,0.1)]">
+                                <MagnifyingGlassIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" />
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && searchQuery.trim()) {
+                                            handleSearch(searchQuery)
+                                        }
+                                    }}
+                                    placeholder="Search videos and playlists..."
+                                    className="flex-1 bg-transparent border-none outline-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 font-medium text-sm"
+                                />
+                                {searchQuery && (
+                                    <button
+                                        onClick={() => setSearchQuery('')}
+                                        className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-500 dark:text-gray-400">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                     </div>
 
                     {/* Right Side: Theme Switch */}
@@ -67,6 +150,6 @@ export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
                     </div>
                 </div>
             </div>
-        </nav>
+        </nav >
     )
 }
