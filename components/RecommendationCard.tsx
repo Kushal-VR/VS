@@ -144,7 +144,7 @@ export default function RecommendationCard({
 
                 {/* Creator Info */}
                 <CreatorRow
-                    channelName="Kushal Stream"
+                    channelName="Quira Stream"
                     channelAvatar={null}
                     viewCount={video.viewCount}
                     uploadDate={video.createdAt}

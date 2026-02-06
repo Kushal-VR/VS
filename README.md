@@ -1,4 +1,4 @@
-# Kushal Stream - Video Streaming Platform
+# Quira Stream - Video Streaming Platform
 
 A complete, production-ready video streaming web application built with Next.js, TypeScript, Tailwind CSS, Prisma, NextAuth, and Stripe.
 
@@ -46,7 +46,7 @@ A complete, production-ready video streaming web application built with Next.js,
 ### 1. Clone and Install
 
 ```bash
-cd kushal-stream
+cd quira-stream
 npm install
 ```
 
@@ -62,7 +62,7 @@ Update the `.env` file with your values:
 
 ```env
 # Database - Update with your PostgreSQL connection string
-DATABASE_URL="postgresql://username:password@localhost:5432/kushal_stream?schema=public"
+DATABASE_URL="postgresql://username:password@localhost:5432/quira_stream?schema=public"
 
 # NextAuth - Generate a secret: openssl rand -base64 32
 NEXTAUTH_URL="http://localhost:3000"
@@ -173,7 +173,7 @@ For subscription events to work properly:
 ## 📁 Project Structure
 
 ```
-kushal-stream/
+quira-stream/
 ├── app/
 │   ├── api/              # API routes
 │   │   ├── auth/         # Authentication endpoints
@@ -204,12 +204,12 @@ kushal-stream/
 
 ### Change Brand Name
 
-The platform uses "Kushal Stream" as the default name. To change it:
+The platform uses "Quira Stream" as the default name. To change it:
 
 1. Update the landing page: `app/page.tsx`
 2. Update the navbar: `components/Navbar.tsx`
 3. Update metadata in `app/layout.tsx`
-4. Search for "Kushal Stream" across the project and replace
+4. Search for "Quira Stream" across the project and replace
 
 ### Modify Pricing
 

@@ -11,7 +11,7 @@ import MainLayout from "@/components/MainLayout";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Kushal Stream - Premium Video Streaming Platform",
+  title: "Quira Stream - Premium Video Streaming Platform",
   description: "Watch exclusive premium content and shorts from your favorite creator",
 };
 

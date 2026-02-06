@@ -82,9 +82,11 @@ export default function Navbar({ onMenuClick, isSidebarOpen }: { onMenuClick: ()
 
                         {/* Logo */}
                         <Link href="/home" className="flex items-center group">
-                            <span className="text-xl md:text-2xl font-black text-gray-900 dark:text-white tracking-tight uppercase group-hover:text-primary transition-all">
-                                Kushal Stream
-                            </span>
+                            <img 
+                                src={theme === 'dark' ? '/logo-dark.png' : '/logo-light.png'}
+                                alt="Quira Stream"
+                                className="h-8 md:h-10 w-auto transition-all group-hover:scale-105"
+                            />
                         </Link>
                     </div>
 

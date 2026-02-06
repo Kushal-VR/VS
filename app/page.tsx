@@ -35,7 +35,7 @@ export default function LandingPage() {
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-6xl md:text-8xl font-black text-black mb-6 tracking-tight">
-              Kushal <span className="text-black italic">Stream</span>
+              Quira <span className="text-black italic">Stream</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 mb-12 max-w-3xl mx-auto font-medium">
               Your exclusive destination for premium video content. Watch full-length videos, shorts, and reels from your favorite creator.
@@ -76,7 +76,7 @@ export default function LandingPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-black mb-4">
-              Why Choose Kushal Stream?
+              Why Choose Quira Stream?
             </h2>
             <p className="text-xl text-gray-600 font-medium">
               Experience premium content like never before
@@ -258,7 +258,7 @@ export default function LandingPage() {
             <Link href="/" className="hover:text-primary transition-colors">Terms of Service</Link>
             <Link href="/" className="hover:text-primary transition-colors">Contact Support</Link>
           </div>
-          <p>&copy; 2025 Kushal Stream. All rights reserved.</p>
+          <p>&copy; 2025 Quira Stream. All rights reserved.</p>
         </div>
       </footer>
 

@@ -84,7 +84,7 @@ export default function PostLoginIntro({ userName, onEnter }: PostLoginIntroProp
                         className="absolute bottom-12 left-1/2 -translate-x-1/2"
                     >
                         <span className="text-8xl font-black text-black tracking-tighter uppercase whitespace-nowrap">
-                            Kushal Stream
+                            Quira Stream
                         </span>
                     </motion.div>
                 </motion.div>
