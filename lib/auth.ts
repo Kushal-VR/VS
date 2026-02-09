@@ -64,20 +64,40 @@ export const authOptions: NextAuthOptions = {
                 token.image = user.image
             }
 
+            // Allow updating name and image through session.update()
             if (trigger === 'update' && session) {
                 if (session.name) token.name = session.name
-                if (session.image || session.image === null) token.image = session.image
-                if (session.subscriptionStatus) token.subscriptionStatus = session.subscriptionStatus
+                if (session.image !== undefined) token.image = session.image
             }
 
             return token
         },
         async session({ session, token }) {
-            if (session.user) {
-                (session.user as any).id = token.id;
-                (session.user as any).role = token.role;
-                (session.user as any).subscriptionStatus = token.subscriptionStatus;
-                (session.user as any).image = token.image;
+            if (session.user && token.email) {
+                // Fetch fresh user data from database on every session request
+                // This ensures subscription status is always current
+                const freshUser = await prisma.user.findUnique({
+                    where: { email: token.email as string },
+                    select: {
+                        id: true,
+                        role: true,
+                        subscriptionStatus: true,
+                        image: true,
+                    },
+                })
+
+                if (freshUser) {
+                    (session.user as any).id = freshUser.id;
+                    (session.user as any).role = freshUser.role;
+                    (session.user as any).subscriptionStatus = freshUser.subscriptionStatus;
+                    (session.user as any).image = freshUser.image;
+                } else {
+                    // Fallback to token data if user not found
+                    (session.user as any).id = token.id;
+                    (session.user as any).role = token.role;
+                    (session.user as any).subscriptionStatus = token.subscriptionStatus;
+                    (session.user as any).image = token.image;
+                }
             }
             return session
         },

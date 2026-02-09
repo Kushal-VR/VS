@@ -127,7 +127,12 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                                 <nav className="space-y-1">
                                     <Link
                                         href="/admin"
-                                        onClick={onClose}
+                                        onClick={() => {
+                                            // Only close sidebar on mobile (below lg breakpoint)
+                                            if (window.innerWidth < 1024) {
+                                                onClose()
+                                            }
+                                        }}
                                         className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-smooth group relative border-2 ${pathname.startsWith('/admin')
                                             ? 'border-primary text-black dark:text-white shadow-[0_4px_12px_-2px_rgba(37,99,235,0.4)] font-bold'
                                             : 'border-transparent text-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-primary'
@@ -171,7 +176,12 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                         <nav className="space-y-1">
                             <Link
                                 href="/profile"
-                                onClick={onClose}
+                                onClick={() => {
+                                    // Only close sidebar on mobile (below lg breakpoint)
+                                    if (window.innerWidth < 1024) {
+                                        onClose()
+                                    }
+                                }}
                                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-smooth group border-2 ${pathname === '/profile' ? 'border-primary bg-primary/5 text-primary shadow-sm' : 'border-transparent text-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-primary'}`}
                             >
                                 <UserIcon className={`w-5 h-5 transition-smooth ${pathname === '/profile' ? 'text-primary' : 'group-hover:text-primary'}`} />
@@ -182,7 +192,12 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                             {!isAdmin && user?.subscriptionStatus !== 'ACTIVE' && (
                                 <Link
                                     href="/pricing"
-                                    onClick={onClose}
+                                    onClick={() => {
+                                        // Only close sidebar on mobile (below lg breakpoint)
+                                        if (window.innerWidth < 1024) {
+                                            onClose()
+                                        }
+                                    }}
                                     className="flex items-center justify-center gap-3 px-3 py-3 rounded-xl transition-all group bg-black hover:bg-gray-800 shadow-[0_8px_20px_-4px_rgba(0,0,0,0.4)]"
                                 >
                                     <span className="font-bold text-white uppercase tracking-wider text-xs">Upgrade to Premium</span>

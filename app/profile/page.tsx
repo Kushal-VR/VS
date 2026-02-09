@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { formatWatchTime, formatDate } from '@/lib/utils'
 import toast from 'react-hot-toast'
 import Cropper from 'react-easy-crop'
@@ -18,10 +19,12 @@ import {
 } from 'lucide-react'
 
 export default function ProfilePage() {
+    const router = useRouter()
     const { data: session, update } = useSession()
     const [activeTab, setActiveTab] = useState('account')
-    const [watchHistory, setWatchHistory] = useState([])
+    const [watchHistory, setWatchHistory] = useState<any[]>([])
     const [totalWatchTime, setTotalWatchTime] = useState(0)
+    const [subscriptionHistory, setSubscriptionHistory] = useState<any[]>([])
     const [name, setName] = useState('')
     const [isEditing, setIsEditing] = useState(false)
     const [profileFile, setProfileFile] = useState<File | null>(null)
@@ -51,18 +54,43 @@ export default function ProfilePage() {
             setName(user.name || '')
         }
         fetchWatchHistory()
+        fetchSubscriptionHistory()
     }, [user])
 
     const fetchWatchHistory = async () => {
         try {
             const response = await fetch('/api/watch-history')
             const data = await response.json()
-            setWatchHistory(data)
 
-            const total = data.reduce((sum: number, item: any) => sum + item.totalWatchTimeSeconds, 0)
-            setTotalWatchTime(total)
+            // Ensure data is an array
+            if (Array.isArray(data)) {
+                setWatchHistory(data)
+                const total = data.reduce((sum: number, item: any) => sum + item.totalWatchTimeSeconds, 0)
+                setTotalWatchTime(total)
+            } else {
+                setWatchHistory([])
+                setTotalWatchTime(0)
+            }
         } catch (error) {
             console.error('Error fetching watch history:', error)
+            setWatchHistory([])
+            setTotalWatchTime(0)
+        }
+    }
+
+    const fetchSubscriptionHistory = async () => {
+        try {
+            const response = await fetch('/api/subscription-history')
+            const data = await response.json()
+
+            if (Array.isArray(data)) {
+                setSubscriptionHistory(data)
+            } else {
+                setSubscriptionHistory([])
+            }
+        } catch (error) {
+            console.error('Error fetching subscription history:', error)
+            setSubscriptionHistory([])
         }
     }
 
@@ -289,6 +317,157 @@ export default function ProfilePage() {
                                     <p className="text-2xl font-black text-primary tracking-tight uppercase">{user?.subscriptionStatus?.toLowerCase() || 'Standard'}</p>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Subscription */}
+                {activeTab === 'subscription' && (
+                    <div className="space-y-6">
+                        <div className="bg-white dark:bg-zinc-900 p-10 rounded-[2.5rem] border border-gray-200 dark:border-white/10 shadow-sm">
+                            <h3 className="text-xl font-black text-black dark:text-white flex items-center gap-3 uppercase tracking-tight mb-8">
+                                <span className="w-2 h-7 bg-black dark:bg-white rounded-full"></span>
+                                Subscription Status
+                            </h3>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="bg-gray-50 dark:bg-zinc-950 p-6 rounded-2xl border border-gray-200 dark:border-white/10">
+                                    <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Current Plan</p>
+                                    <p className="text-2xl font-black text-black dark:text-white tracking-tight">
+                                        {user?.subscriptionStatus === 'ACTIVE' ? 'Premium' : 'Free'}
+                                    </p>
+                                </div>
+
+                                <div className="bg-gray-50 dark:bg-zinc-950 p-6 rounded-2xl border border-gray-200 dark:border-white/10">
+                                    <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Status</p>
+                                    <p className={`text-2xl font-black tracking-tight uppercase ${user?.subscriptionStatus === 'ACTIVE' ? 'text-green-600' : 'text-gray-400'
+                                        }`}>
+                                        {user?.subscriptionStatus || 'NONE'}
+                                    </p>
+                                </div>
+
+                                <div className="bg-gray-50 dark:bg-zinc-950 p-6 rounded-2xl border border-gray-200 dark:border-white/10">
+                                    <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Access Level</p>
+                                    <p className="text-2xl font-black text-black dark:text-white tracking-tight">
+                                        {user?.subscriptionStatus === 'ACTIVE' ? 'Full' : 'Limited'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {user?.subscriptionStatus !== 'ACTIVE' && (
+                                <div className="mt-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 rounded-2xl border border-purple-200 dark:border-purple-800">
+                                    <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-4">
+                                        Upgrade to Premium to unlock all features and content!
+                                    </p>
+                                    <button
+                                        onClick={() => router.push('/pricing')}
+                                        className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black rounded-xl uppercase tracking-widest text-xs hover:scale-105 transition-transform shadow-lg"
+                                    >
+                                        Upgrade Now
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {user?.subscriptionStatus === 'ACTIVE' && (
+                            <div className="bg-white dark:bg-zinc-900 p-10 rounded-[2.5rem] border border-gray-200 dark:border-white/10 shadow-sm">
+                                <h3 className="text-xl font-black text-black dark:text-white flex items-center gap-3 uppercase tracking-tight mb-6">
+                                    <span className="w-2 h-7 bg-black dark:bg-white rounded-full"></span>
+                                    Premium Benefits
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {[
+                                        'Full access to ALL premium videos',
+                                        'All free content included',
+                                        'Premium + free shorts feed',
+                                        'Advanced analytics',
+                                        'Watch history tracking',
+                                        'Cancel anytime'
+                                    ].map((benefit, i) => (
+                                        <div key={i} className="flex items-center gap-3">
+                                            <CheckIcon className="w-5 h-5 text-green-600 flex-shrink-0" />
+                                            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{benefit}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Subscription History */}
+                        <div className="bg-white dark:bg-zinc-900 p-10 rounded-[2.5rem] border border-gray-200 dark:border-white/10 shadow-sm">
+                            <h3 className="text-xl font-black text-black dark:text-white flex items-center gap-3 uppercase tracking-tight mb-8">
+                                <span className="w-2 h-7 bg-black dark:bg-white rounded-full"></span>
+                                Subscription History
+                            </h3>
+
+                            {subscriptionHistory.length === 0 ? (
+                                <div className="text-center py-16 bg-gray-50 dark:bg-zinc-950 rounded-[2rem] border border-dashed border-gray-200 dark:border-white/10">
+                                    <p className="text-gray-400 dark:text-gray-600 font-black uppercase tracking-widest text-sm">No payment records found.</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {subscriptionHistory.map((record: any) => {
+                                        const paymentDate = new Date(record.paymentDate)
+                                        const endDate = record.subscriptionEndDate ? new Date(record.subscriptionEndDate) : null
+
+                                        return (
+                                            <div key={record.id} className="bg-gray-50 dark:bg-zinc-950 p-6 rounded-2xl border border-gray-200 dark:border-white/10 hover:border-primary/30 transition-all">
+                                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                                    <div>
+                                                        <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">Payment Date</p>
+                                                        <p className="text-sm font-bold text-black dark:text-white">
+                                                            {paymentDate.toLocaleDateString('en-US', {
+                                                                month: 'short',
+                                                                day: 'numeric',
+                                                                year: 'numeric'
+                                                            })}
+                                                        </p>
+                                                        <p className="text-xs font-bold text-gray-500">
+                                                            {paymentDate.toLocaleTimeString('en-US', {
+                                                                hour: '2-digit',
+                                                                minute: '2-digit'
+                                                            })}
+                                                        </p>
+                                                    </div>
+
+                                                    <div>
+                                                        <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">Amount Paid</p>
+                                                        <p className="text-lg font-black text-green-600">₹{record.amount.toFixed(2)}</p>
+                                                    </div>
+
+                                                    <div>
+                                                        <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">Plan Type</p>
+                                                        <p className="text-sm font-black text-black dark:text-white uppercase">{record.plan}</p>
+                                                    </div>
+
+                                                    <div>
+                                                        <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">Subscription Ends</p>
+                                                        {endDate ? (
+                                                            <>
+                                                                <p className="text-sm font-bold text-black dark:text-white">
+                                                                    {endDate.toLocaleDateString('en-US', {
+                                                                        month: 'short',
+                                                                        day: 'numeric',
+                                                                        year: 'numeric'
+                                                                    })}
+                                                                </p>
+                                                                <p className="text-xs font-bold text-gray-500">
+                                                                    {endDate.toLocaleTimeString('en-US', {
+                                                                        hour: '2-digit',
+                                                                        minute: '2-digit'
+                                                                    })}
+                                                                </p>
+                                                            </>
+                                                        ) : (
+                                                            <p className="text-sm font-bold text-gray-400">N/A</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
