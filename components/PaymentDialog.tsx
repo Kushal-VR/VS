@@ -108,18 +108,25 @@ const PaymentDialog: React.FC = () => {
                             paymentData.paymentId,
                             response
                         );
+                        console.log('🔍 Verification result:', success);
                         if (success) {
                             console.log('✅ Payment verified successfully');
-                            toast.success("Payment successful! Activating your premium access...");
 
-                            // Wait for database transaction to complete
-                            console.log('⏳ Waiting for database transaction...');
-                            await new Promise(resolve => setTimeout(resolve, 1000));
+                            // Show success message
+                            toast.success("Payment successful! Your subscription is now active.", {
+                                duration: 4000,
+                            });
 
-                            // Force a full page reload to fetch fresh session
-                            // This is more reliable than session.update() which can cause logout/login cycles
-                            console.log('🔄 Reloading page to refresh session...');
-                            window.location.href = "/";
+                            // Wait a moment for database to update
+                            console.log('⏳ Waiting 2 seconds for database...');
+                            await new Promise(resolve => setTimeout(resolve, 2000));
+
+                            // Navigate to profile page with absolute URL
+                            const profileUrl = window.location.origin + "/profile";
+                            console.log('🚀 REDIRECTING TO:', profileUrl);
+                            console.log('📍 Current location:', window.location.href);
+                            window.location.replace(profileUrl);
+                            console.log('✅ Redirect called');
                         } else {
                             console.log('❌ Payment verification failed');
                             toast.error("Payment verification failed");
@@ -127,6 +134,12 @@ const PaymentDialog: React.FC = () => {
                     } catch (error) {
                         console.error('❌ Payment handler error:', error);
                         toast.error("Payment verification failed");
+                    }
+                },
+                modal: {
+                    ondismiss: function () {
+                        console.log('🚪 Razorpay modal dismissed by user');
+                        // Don't do anything - let the handler manage navigation
                     }
                 },
                 prefill: {
@@ -163,11 +176,11 @@ const PaymentDialog: React.FC = () => {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.5 }}
-                        onClick={() => router.push("/")}
+                        onClick={() => router.push("/profile")}
                         className="flex items-center text-gray-400 hover:text-white transition-colors duration-300 mb-8"
                     >
                         <ArrowLeft className="mr-2 h-5 w-5" />
-                        <span className="text-lg">Back to Home</span>
+                        <span className="text-lg">Back to Profile</span>
                     </motion.button>
 
                     <motion.div

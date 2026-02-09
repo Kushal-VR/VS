@@ -38,8 +38,11 @@ export default function PricingPage() {
                             response
                         )
                         if (success) {
-                            toast.success("Payment successful! Welcome to Premium!")
-                            router.push("/")
+                            toast.success("Payment successful! Redirecting to your profile...")
+                            // Wait for database to update
+                            await new Promise(resolve => setTimeout(resolve, 800))
+                            // Redirect to profile page
+                            window.location.href = "/profile"
                         } else {
                             toast.error("Payment verification failed")
                         }
